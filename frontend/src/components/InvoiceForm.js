@@ -58,7 +58,7 @@ const fetchNextInvoice = async () => {
  
 
   // --- GST Rate state ---
-  const [gstRate, setGstRate] = useState(9);
+  const [gstRate, setGstRate] = useState(18);
 
   // --- Fetch latest invoice number from backend ---
   useEffect(() => {
@@ -115,13 +115,18 @@ const fetchNextInvoice = async () => {
 };*/}
 
   // --- Total & GST calculation ---
-  const total = invoice.items.reduce(
-    (sum, item) => sum + Number(item.amount || 0),
-    0
-  );
-  const cgst = total * (gstRate / 100);
-  const sgst = total * (gstRate / 100);
-  const grandTotal = total + cgst + sgst;
+  // --- Total & GST calculation ---
+const total = invoice.items.reduce(
+  (sum, item) => sum + Number(item.amount || 0),
+  0
+);
+
+// Calculate CGST and SGST as half of GST rate
+const cgst = total * (gstRate / 2 / 100);
+const sgst = total * (gstRate / 2 / 100);
+
+const grandTotal = total + cgst + sgst;
+
 
   // --- Convert number to words ---
   const numberToWords = (num) => {
@@ -448,14 +453,23 @@ const downloadPDF = async () => {
               <tr key={index}>
                 <td style={{ textAlign: "center" }}>{index + 1}</td>
                 <td>
-                  <input
-                    type="text"
-                    name="description"
-                    value={item.description}
-                    onChange={(e) => handleItemChange(index, e)}
-                    style={{ width: "98%", height:"98%", border: "none", outline: "none" }}
-                  />
-                </td>
+  <textarea
+    name="description"
+    value={item.description}
+    onChange={(e) => handleItemChange(index, e)}
+    style={{
+      width: "100%",
+      minHeight: "40px",   // gives space for multiple lines
+      border: "none",
+      outline: "none",
+      resize: "vertical",  // user can drag to expand height
+      fontFamily: "Times New Roman",
+      fontSize: "14px",
+      whiteSpace: "pre-wrap", // preserves line breaks
+      overflowWrap: "break-word",
+    }}
+  />
+</td>
                 <td>
                   <input
                     type="text"
@@ -503,7 +517,7 @@ const downloadPDF = async () => {
     style={{ padding: "5px", marginLeft: "8px" }}
   >
     <option value={5}>GST 5% </option>
-    <option value={9}>GST 9%</option>
+    <option value={18}>GST 18%</option>
   </select>
 </div>
 
@@ -544,11 +558,11 @@ const downloadPDF = async () => {
                   <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right" }}>{total.toFixed(2)}</td>
                 </tr>
                 <tr>
-                  <td style={{ border: "1px solid #000", padding: "6px" }}><b>CGST ({gstRate}%)</b></td>
+                  <td style={{ border: "1px solid #000", padding: "6px" }}><b>CGST ({gstRate / 2}%)</b></td>
                   <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right" }}>{cgst.toFixed(2)}</td>
                 </tr>
                 <tr>
-                  <td style={{ border: "1px solid #000", padding: "6px" }}><b>SGST ({gstRate}%)</b></td>
+                  <td style={{ border: "1px solid #000", padding: "6px" }}><b>SGST ({gstRate / 2}%)</b></td>
                   <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right" }}>{sgst.toFixed(2)}</td>
                 </tr>
                 <tr>

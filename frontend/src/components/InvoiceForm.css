@@ -358,20 +358,19 @@ min-height: 100px;
 
 .items-table th,
 .items-table td {
-  border: 1px solid #000;
-  padding: 8px;
-  font-size: 14px;
-  vertical-align: middle; /* ✅ ensures text stays centered vertically */
-  word-break: break-word;
-  white-space: pre-wrap; /* ✅ wraps long text automatically */
-  overflow-wrap: break-word;
-  overflow: visible; /* ✅ ensures full content is visible */
+    border: 1px solid #000;
+    padding: 6px;
+    font-size: 14px;
+    vertical-align: top; /* align text to top for multi-line rows */
+    word-break: break-word; /* break long words */
+    white-space: pre-wrap; /* preserve line breaks and wrap text */
+    overflow-wrap: break-word; /* wrap long words */
 }
 
 /* Column widths */
 .items-table th:nth-child(2),
 .items-table td:nth-child(2) {
-  width: 450px;
+  width: 45%;
   text-align: left; /* Description column wider */
 }
 
@@ -445,4 +444,27 @@ min-height: 100px;
 /* Hide PDF-only elements on screen, but they'll be captured in html2canvas */
 .pdf-only {
   display: block !important; /* will be visible in canvas */
+}
+
+.items-table td:nth-child(2) input {
+    width: 100%;
+    min-height: 30px; /* allow extra height for multiple lines */
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-family: "Times New Roman", serif;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.items-table td:nth-child(2) textarea {
+  width: 100%;
+  min-height: 40px;
+  border: none;
+  outline: none;
+  font-family: "Times New Roman", serif;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  resize: vertical; /* optional: allow manual height adjustment */
 }
