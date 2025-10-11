@@ -4,19 +4,22 @@ import Invoice from "../models/Invoice.js";
 const router = express.Router();
 
 // --- Get next invoice number ---
+// GET /api/invoices/next-number
 router.get("/next-number", async (req, res) => {
   try {
-    const lastInvoice = await Invoice.findOne().sort({ invoiceNo: -1 }).exec();
-    let nextInvoiceNo = "0001";
+    const lastInvoice = await Invoice.findOne().sort({ createdAt: -1 });
+    let nextNumber = "0001";
 
-    if (lastInvoice) {
-      const lastNo = parseInt(lastInvoice.invoiceNo, 10);
-      nextInvoiceNo = String(lastNo + 1).padStart(4, "0");
+    if (lastInvoice && lastInvoice.invoiceNo) {
+      const lastNum = parseInt(lastInvoice.invoiceNo, 10);
+      if (!isNaN(lastNum)) {
+        nextNumber = String(lastNum + 1).padStart(4, "0");
+      }
     }
 
-    res.json({ nextInvoiceNo });
+    res.json({ nextInvoiceNo: nextNumber });
   } catch (err) {
-    console.error("❌ Error fetching next invoice number:", err);
+    console.error("Error fetching next invoice number:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -33,21 +36,6 @@ router.get("/", async (req, res) => {
 });
 
 // --- Get single invoice by invoice number ---
-router.get("/next-number", async (req, res) => {
-  try {
-    const last = await Invoice.findOne().sort({ createdAt: -1 });
-    let nextNumber = 1;
-
-    if (last && last.invoiceNo) {
-      const lastNum = parseInt(last.invoiceNo, 10);
-      nextNumber = isNaN(lastNum) ? 1 : lastNum + 1;
-    }
-
-    res.json({ nextNumber });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 
 // --- Create new invoice ---

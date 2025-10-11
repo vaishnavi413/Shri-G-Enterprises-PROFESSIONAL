@@ -40,9 +40,14 @@ function InvoiceForm() {
   }
 };
 const fetchNextInvoice = async () => {
-  const res = await fetch("https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/next-number");
-  const data = await res.json();
-  setInvoiceNumber(data.nextNumber); // assuming you have a state for invoice number
+  try {
+    const res = await fetch("https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/next-number");
+    const data = await res.json();
+    // Update invoiceNo in your invoice state
+    setInvoice(prev => ({ ...prev, invoiceNo: data.nextNumber }));
+  } catch (err) {
+    console.error("Error fetching next invoice number:", err);
+  }
 };
 
 
@@ -57,21 +62,23 @@ const fetchNextInvoice = async () => {
 
   // --- Fetch latest invoice number from backend ---
   useEffect(() => {
-  const fetchNextNumber = async () => {
+  const fetchNextInvoice = async () => {
     try {
-      const response = await axios.get(
-        "https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/latest"
+      const res = await axios.get(
+        "https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/next-number"
       );
-      setInvoice((prev) => ({
+      setInvoice(prev => ({
         ...prev,
-        invoiceNo: response.data.nextNo,
+        invoiceNo: res.data.nextInvoiceNo || "0001"
       }));
-    } catch (error) {
-      console.error("Error fetching next invoice number:", error);
+    } catch (err) {
+      console.error("Error fetching next invoice number:", err);
     }
   };
-  fetchNextNumber();
+  fetchNextInvoice();
 }, []);
+
+
 
 
   // --- Handle changes to invoice items ---
@@ -192,47 +199,34 @@ const fetchNextInvoice = async () => {
  // ✅ Save invoice and auto-reset
 const handleSaveInvoice = async () => {
   try {
-    // Prepare object to match backend
-    const invoiceToSave = {
-      invoiceNo: invoice.invoiceNo,       // ⚡ must match backend
-      customerName: invoice.customerName,
-      address: invoice.address,
-      invoiceDate: invoice.invoiceDate,
-      poNo: invoice.poNo,
-      poDate: invoice.poDate,
-      items: invoice.items,
-      total: total,
-      cgst: cgst,
-      sgst: sgst,
-      grandTotal: grandTotal,
-      notes: invoice.notes,
-    };
+    await axios.post(
+      "https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/save",
+      invoice
+    );
 
-    console.log("Saving invoice: ", invoiceToSave);
+    alert("Invoice saved successfully!");
 
-    await axios.post("https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/save")
-    alert("✅ Invoice saved successfully!");
+    // Clear form but keep next invoice number
+    const res = await axios.get(
+      "https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/next-number"
+    );
 
-    // Clear form
     setInvoice({
-      invoiceNo: "",
       customerName: "",
       address: "",
+      invoiceNo: res.data.nextInvoiceNo || "0001",
       invoiceDate: "",
       poNo: "",
       poDate: "",
       items: [{ description: "", hsn: "", qty: 0, rate: 0, amount: 0 }],
       notes: ["Thank you for your business!", ""],
     });
-
-    // Fetch next invoice number
-    fetchLatestInvoiceNo();
-
-  } catch (error) {
-    console.error("❌ Error saving invoice:", error);
-    alert("❌ Error saving invoice!");
+  } catch (err) {
+    console.error("Error saving invoice:", err);
+    alert("Error saving invoice!");
   }
 };
+
 
 
 
