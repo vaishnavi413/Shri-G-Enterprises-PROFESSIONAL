@@ -475,3 +475,19 @@ min-height: 100px;
   white-space: pre-wrap;
   overflow-wrap: break-word;
 }
+
+.address-box {
+  min-height: 60px;           /* minimum height */
+  word-wrap: break-word;
+  white-space: pre-wrap;      /* preserves line breaks */
+  overflow-wrap: break-word;
+  overflow: visible;
+  padding: 4px;
+  border: 1px solid #ccc;     /* optional, looks like input */
+}
+
+.address-box:empty:before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+}

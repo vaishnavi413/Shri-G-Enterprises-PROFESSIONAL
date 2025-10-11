@@ -129,76 +129,94 @@ const grandTotal = total + cgst + sgst;
 
 
   // --- Convert number to words ---
-  const numberToWords = (num) => {
-    const a = [
-      "",
-      "One",
-      "Two",
-      "Three",
-      "Four",
-      "Five",
-      "Six",
-      "Seven",
-      "Eight",
-      "Nine",
-      "Ten",
-      "Eleven",
-      "Twelve",
-      "Thirteen",
-      "Fourteen",
-      "Fifteen",
-      "Sixteen",
-      "Seventeen",
-      "Eighteen",
-      "Nineteen",
-    ];
-    const b = [
-      "",
-      "",
-      "Twenty",
-      "Thirty",
-      "Forty",
-      "Fifty",
-      "Sixty",
-      "Seventy",
-      "Eighty",
-      "Ninety",
-    ];
-    if (isNaN(num)) return "";
-    if (num === 0) return "Rupees Zero Only";
+  // --- Convert number to words including paise ---
+const numberToWords = (num) => {
+  if (isNaN(num)) return "";
+  if (num === 0) return "Rupees Zero Only";
 
-    if ((num = num.toString()).length > 9) return "Overflow";
-    let n = ("000000000" + num)
-      .substr(-9)
-      .match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-    if (!n) return "";
-    let str = "";
-    const crore = parseInt(n[1]),
-      lakh = parseInt(n[2]),
-      thousand = parseInt(n[3]),
-      hundred = parseInt(n[4]),
-      rest = parseInt(n[5]);
-    if (crore)
-      str +=
-        (a[crore] || b[Math.floor(crore / 10)] + " " + a[crore % 10]) +
-        " Crore ";
-    if (lakh)
-      str +=
-        (a[lakh] || b[Math.floor(lakh / 10)] + " " + a[lakh % 10]) + " Lakh ";
-    if (thousand)
-      str +=
-        (a[thousand] || b[Math.floor(thousand / 10)] + " " + a[thousand % 10]) +
-        " Thousand ";
-    if (hundred) str += a[hundred] + " Hundred ";
-    if (rest)
-      str +=
-        (str !== "" ? "and " : "") +
-        (a[rest] || b[Math.floor(rest / 10)] + " " + a[rest % 10]) +
-        " ";
-    return "Rupees " + str.trim() + " Only";
-  };
+  // Split rupees and paise
+  const [rupeesPart, paisePart] = num.toFixed(2).split(".");
+  const rupees = parseInt(rupeesPart);
+  const paise = parseInt(paisePart);
 
-  const rupeesInWords = numberToWords(Math.round(grandTotal));
+  const a = [
+    "",
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten",
+    "Eleven",
+    "Twelve",
+    "Thirteen",
+    "Fourteen",
+    "Fifteen",
+    "Sixteen",
+    "Seventeen",
+    "Eighteen",
+    "Nineteen",
+  ];
+  const b = [
+    "",
+    "",
+    "Twenty",
+    "Thirty",
+    "Forty",
+    "Fifty",
+    "Sixty",
+    "Seventy",
+    "Eighty",
+    "Ninety",
+  ];
+
+  function convertNumber(n) {
+    if (n === 0) return "";
+    if (n < 20) return a[n];
+    if (n < 100) return b[Math.floor(n / 10)] + (n % 10 ? " " + a[n % 10] : "");
+    if (n < 1000)
+      return (
+        a[Math.floor(n / 100)] +
+        " Hundred" +
+        (n % 100 ? " and " + convertNumber(n % 100) : "")
+      );
+    if (n < 100000)
+      return (
+        convertNumber(Math.floor(n / 1000)) +
+        " Thousand" +
+        (n % 1000 ? " " + convertNumber(n % 1000) : "")
+      );
+    if (n < 10000000)
+      return (
+        convertNumber(Math.floor(n / 100000)) +
+        " Lakh" +
+        (n % 100000 ? " " + convertNumber(n % 100000) : "")
+      );
+    return (
+      convertNumber(Math.floor(n / 10000000)) +
+      " Crore" +
+      (n % 10000000 ? " " + convertNumber(n % 10000000) : "")
+    );
+  }
+
+  let words = "Rupees " + convertNumber(rupees);
+
+  if (paise > 0) {
+    words += " and " + convertNumber(paise) + " Paise";
+  }
+
+  words += " Only";
+
+  return words;
+};
+
+
+  const rupeesInWords = numberToWords(grandTotal);
+
 
   // --- Save invoice to backend ---
  // ✅ Save invoice and auto-reset
@@ -358,13 +376,33 @@ const downloadPDF = async () => {
                     }
                   />
                   <br />
-                  <textarea
-                    placeholder="Address"
-                    value={invoice.address}
-                    onChange={(e) =>
-                      setInvoice({ ...invoice, address: e.target.value })
-                    }
-                  />
+                 <div
+  contentEditable
+  suppressContentEditableWarning={true}
+  className="address-box"
+  onInput={(e) =>
+    setInvoice({ ...invoice, address: e.currentTarget.textContent })
+  }
+  style={{
+    width: "95%",
+    minHeight: "60px",
+    fontFamily: "Times New Roman",
+    fontSize: "14px",
+    whiteSpace: "pre-wrap",
+    wordWrap: "break-word",
+    overflowWrap: "break-word",
+    outline: "none",
+    border: "none",
+    padding: "4px",
+    position: "relative",
+  }}
+  data-placeholder="Enter Address..."
+>
+  {invoice.address}
+</div>
+
+
+
                 </td>
                 <td className="right-details">
                   <table className="inner-details-table">
