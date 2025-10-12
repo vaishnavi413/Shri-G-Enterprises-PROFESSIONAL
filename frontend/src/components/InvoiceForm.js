@@ -384,7 +384,6 @@ const formatDateForDisplay = (dateString) => {
                  <div
   contentEditable
   suppressContentEditableWarning={true}
-  className="address-box"
   onInput={(e) =>
     setInvoice({ ...invoice, address: e.currentTarget.textContent })
   }
@@ -393,19 +392,17 @@ const formatDateForDisplay = (dateString) => {
     minHeight: "60px",
     fontFamily: "Times New Roman",
     fontSize: "14px",
+    border: "0px solid #ccc",
+    padding: "6px",
+    outline: "none",
     whiteSpace: "pre-wrap",
     wordWrap: "break-word",
-    overflowWrap: "break-word",
-    outline: "none",
-    border: "none",
-    padding: "4px",
-    position: "relative",
+    overflow: "visible",
+    color: invoice.address ? "black" : "gray", // placeholder color
   }}
-  data-placeholder="Enter Address..."
 >
-  {invoice.address}
+  {!invoice.address && "Enter Address..."}
 </div>
-
 
 
                 </td>

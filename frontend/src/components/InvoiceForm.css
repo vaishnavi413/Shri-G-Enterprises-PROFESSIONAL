@@ -492,4 +492,9 @@ min-height: 100px;
   pointer-events: none;
 }
 
+.address-box:empty:before {
+  content: attr(placeholder);
+  color: #888;
+  pointer-events: none;
+}
 
