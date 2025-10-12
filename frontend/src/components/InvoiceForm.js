@@ -433,7 +433,8 @@ const formatDateForDisplay = (dateString) => {
       type="date"
       value={invoice.invoiceDate || ""}
       onChange={(e) => setInvoice({ ...invoice, invoiceDate: e.target.value })}
-      max="2026-03-31"  // <-- Correct format
+      max="2026-03-31"
+      onKeyDown={(e) => e.preventDefault()} // prevent manual typing but keep calendar
     />
   </td>
 </tr>
@@ -458,7 +459,8 @@ const formatDateForDisplay = (dateString) => {
       type="date"
       value={invoice.poDate || ""}
       onChange={(e) => setInvoice({ ...invoice, poDate: e.target.value })}
-      max="2026-03-31"  // <-- Correct format
+      max="2026-03-31"
+      onKeyDown={(e) => e.preventDefault()} // prevent manual typing but keep calendar
     />
   </td>
 </tr>
