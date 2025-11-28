@@ -4,18 +4,12 @@ import Invoice from "../models/Invoice.js";
 const router = express.Router();
 
 // --- Get next invoice number ---
-// GET /api/invoices/next-number
 router.get("/next-number", async (req, res) => {
   try {
     const lastInvoice = await Invoice.findOne().sort({ createdAt: -1 });
-    let nextNumber = "0001";
-
-    if (lastInvoice && lastInvoice.invoiceNo) {
-      const lastNum = parseInt(lastInvoice.invoiceNo, 10);
-      if (!isNaN(lastNum)) {
-        nextNumber = String(lastNum + 1).padStart(4, "0");
-      }
-    }
+    const nextNumber = lastInvoice
+      ? String(parseInt(lastInvoice.invoiceNo) + 1).padStart(4, "0")
+      : "0001";
 
     res.json({ nextInvoiceNo: nextNumber });
   } catch (err) {
@@ -27,7 +21,7 @@ router.get("/next-number", async (req, res) => {
 // --- Get all invoices ---
 router.get("/", async (req, res) => {
   try {
-    const invoices = await Invoice.find().sort({ invoiceNo: -1 });
+    const invoices = await Invoice.find().sort({ createdAt: -1 });
     res.json(invoices);
   } catch (err) {
     console.error("❌ Error fetching invoices:", err);
@@ -35,15 +29,12 @@ router.get("/", async (req, res) => {
   }
 });
 
-// --- Get single invoice by invoice number ---
-
-
-// --- Create new invoice ---
+// --- Save Invoice (AUTO-GENERATE invoiceNo HERE) ---
 router.post("/save", async (req, res) => {
   try {
     const invoiceData = req.body;
 
-    // Ensure numeric fields
+    // Format items correctly
     invoiceData.items = (invoiceData.items || []).map((item) => ({
       description: item.description || "",
       hsn: item.hsn || "",
@@ -59,30 +50,26 @@ router.post("/save", async (req, res) => {
     invoiceData.sgst = Number(invoiceData.sgst) || 0;
     invoiceData.grandTotal = Number(invoiceData.grandTotal) || 0;
 
-    // Handle duplicate invoice number
-    if (invoiceData.invoiceNo) {
-      const exists = await Invoice.findOne({ invoiceNo: invoiceData.invoiceNo });
-      if (exists) {
-        const lastInvoice = await Invoice.findOne().sort({ invoiceNo: -1 });
-        invoiceData.invoiceNo = lastInvoice
-          ? String(Number(lastInvoice.invoiceNo) + 1).padStart(4, "0")
-          : "0001";
-      }
-    } else {
-      const lastInvoice = await Invoice.findOne().sort({ invoiceNo: -1 });
-      invoiceData.invoiceNo = lastInvoice
-        ? String(Number(lastInvoice.invoiceNo) + 1).padStart(4, "0")
-        : "0001";
-    }
+    // *** OLD SYSTEM AUTO INVOICE NO ***
+    const lastInvoice = await Invoice.findOne().sort({ createdAt: -1 });
 
+    const nextInvoiceNo = lastInvoice
+      ? String(parseInt(lastInvoice.invoiceNo) + 1).padStart(4, "0")
+      : "0001";
+
+    invoiceData.invoiceNo = nextInvoiceNo;
+
+    // Save invoice
     const newInvoice = new Invoice(invoiceData);
     await newInvoice.save();
 
-    res
-      .status(201)
-      .json({ message: "Invoice saved successfully", invoice: newInvoice });
+    res.status(201).json({
+      message: "Invoice saved successfully",
+      invoice: newInvoice,
+    });
+
   } catch (err) {
-    console.error("❌ Error saving invoice:", err);
+    console.error("❌ Error saving invoice:", err.message);
     res.status(500).json({ error: "Failed to save invoice" });
   }
 });

@@ -1,112 +1,61 @@
-// controllers/invoiceController.js
-import Invoice from "../models/Invoice.js";
-import Counter from "../models/Counter.js";
-import formatInvoiceNumber from "../utils/formatInvoiceNumber.js";
-import { generatePdfBuffer } from "../utils/pdfGenerator.js";
+import Invoice from "../models/invoice.model.js";
 
-/**
- * Save a draft (no seq assigned)
- * POST /api/invoices/draft
- */
-export const saveDraft = async (req, res) => {
-  try {
-    const data = req.body;
-    const draft = new Invoice({ ...data, finalized: false });
-    await draft.save();
-    res.status(201).json(draft);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+// Auto-generate next invoice number (0001, 0002...)
+const generateNextInvoiceNo = async () => {
+  const last = await Invoice.findOne().sort({ createdAt: -1 });
+
+  if (!last) return "0001";
+
+  const lastNum = parseInt(last.invoiceNo);
+  const nextNum = lastNum + 1;
+
+  return String(nextNum).padStart(4, "0");
 };
 
-/**
- * Finalize invoice (assign seq atomically) 
- * POST /api/invoices/finalize
- * body: { draftId?, invoiceData }
- */
-export const finalizeInvoice = async (req, res) => {
+// SAVE INVOICE
+export const saveInvoice = async (req, res) => {
   try {
-    const { draftId, invoiceData } = req.body;
-    let invoice;
+    const invoiceNo = await generateNextInvoiceNo();
 
-    if (draftId) {
-      invoice = await Invoice.findById(draftId);
-      if (!invoice) return res.status(404).json({ message: "Draft not found" });
-      if (invoice.finalized) return res.json(invoice); // already finalized -> idempotent
-      Object.assign(invoice, invoiceData || {});
-    } else {
-      invoice = new Invoice(invoiceData);
-    }
-
-    // Atomic counter increment
-    const counter = await Counter.findOneAndUpdate(
-      { _id: "invoiceCounter" },
-      { $inc: { seq: 1 } },
-      { new: true, upsert: true }
-    );
-
-    invoice.seq = counter.seq;
-    invoice.number = formatInvoiceNumber(counter.seq);
-    invoice.finalized = true;
-    invoice.finalizedAt = new Date();
-
-    await invoice.save();
-    res.status(201).json(invoice);
-  } catch (err) {
-    console.error("finalizeInvoice error:", err);
-    res.status(500).json({ message: err.message });
-  }
-};
-
-/**
- * List invoices with optional search & pagination
- * GET /api/invoices?search=&page=1&limit=50
- */
-export const listInvoices = async (req, res) => {
-  try {
-    const { page = 1, limit = 50, search } = req.query;
-    const q = {};
-    if (search) q["customer.name"] = new RegExp(search, "i");
-    const skip = (page - 1) * limit;
-    const total = await Invoice.countDocuments(q);
-    const invoices = await Invoice.find(q).sort({ createdAt: -1 }).skip(skip).limit(+limit);
-    res.json({ total, page: +page, invoices });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-/**
- * Get one invoice
- * GET /api/invoices/:id
- */
-export const getInvoice = async (req, res) => {
-  try {
-    const invoice = await Invoice.findById(req.params.id);
-    if (!invoice) return res.status(404).json({ message: "Invoice not found" });
-    res.json(invoice);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-/**
- * Download generated PDF
- * GET /api/invoices/:id/download
- */
-export const downloadInvoice = async (req, res) => {
-  try {
-    const invoice = await Invoice.findById(req.params.id);
-    if (!invoice) return res.status(404).json({ message: "Invoice not found" });
-
-    const pdfBuffer = await generatePdfBuffer(invoice);
-
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${invoice.number || invoice._id}.pdf"`
+    const newInvoice = new Invoice({
+      invoiceNo,
+      customerName: req.body.customerName,
+      address: req.body.address,
+      invoiceDate: req.body.invoiceDate,
+      poNo: req.body.poNo,
+      poDate: req.body.poDate,
+      items: req.body.items,
+      total: req.body.total,
+      cgst: req.body.cgst,
+      sgst: req.body.sgst,
+      grandTotal: req.body.grandTotal,
+      notes: req.body.notes,
     });
-    res.send(pdfBuffer);
+
+    const saved = await newInvoice.save();
+    res.status(201).json(saved);
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Error saving invoice:", err);
+    res.status(500).json({ message: "Failed to save invoice", error: err });
+  }
+};
+
+// GET ALL INVOICES
+export const getInvoices = async (req, res) => {
+  try {
+    const invoices = await Invoice.find().sort({ createdAt: -1 });
+    res.status(200).json(invoices);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch invoices", error: err });
+  }
+};
+
+export const getInvoiceById = async (req, res) => {
+  try {
+    const invoice = await Invoice.findById(req.params.id);
+    res.status(200).json(invoice);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch invoice", error: err });
   }
 };

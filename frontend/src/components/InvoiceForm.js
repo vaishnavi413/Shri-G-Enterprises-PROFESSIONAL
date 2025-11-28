@@ -30,28 +30,6 @@ function InvoiceForm() {
     notes: ["Thank you for your business!", ""],
   });
 
-    const fetchLatestInvoiceNo = async () => {
-  try {
-    const res = await axios.get("https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/latest");
-    const nextNo = res.data.nextInvoiceNo || "0001";
-    setInvoice(prev => ({ ...prev, invoiceNo: res.data.nextInvoiceNo }));
-  } catch (err) {
-    console.error("Error fetching latest invoice:", err);
-  }
-};
-const fetchNextInvoice = async () => {
-  try {
-    const res = await fetch("https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/next-number");
-    const data = await res.json();
-    // Update invoiceNo in your invoice state
-    setInvoice(prev => ({ ...prev, invoiceNo: data.nextNumber }));
-  } catch (err) {
-    console.error("Error fetching next invoice number:", err);
-  }
-};
-
-
-
 
 
   // Fetch invoice number when page loads
@@ -61,22 +39,25 @@ const fetchNextInvoice = async () => {
   const [gstRate, setGstRate] = useState(18);
 
   // --- Fetch latest invoice number from backend ---
-  useEffect(() => {
-  const fetchNextInvoice = async () => {
-    try {
-      const res = await axios.get(
-        "https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/next-number"
-      );
-      setInvoice(prev => ({
-        ...prev,
-        invoiceNo: res.data.nextInvoiceNo || "0001"
-      }));
-    } catch (err) {
-      console.error("Error fetching next invoice number:", err);
-    }
-  };
+  // --- Fetch next invoice number when component loads ---
+useEffect(() => {
   fetchNextInvoice();
 }, []);
+
+const fetchNextInvoice = async () => {
+  try {
+    const res = await axios.get(
+      "https://shri-g-enterprises-invoice-billl.onrender.com/api/invoices/next-number"
+    );
+    setInvoice(prev => ({
+      ...prev,
+      invoiceNo: res.data.nextInvoiceNo || "0001"
+    }));
+  } catch (err) {
+    console.error("Error fetching next invoice number:", err);
+    alert("Failed to fetch invoice number. Please refresh the page.");
+  }
+};
 
 
 
@@ -220,6 +201,7 @@ const numberToWords = (num) => {
 
   // --- Save invoice to backend ---
  // ✅ Save invoice and auto-reset
+// ✅ Save invoice and reset form
 const handleSaveInvoice = async () => {
   try {
     await axios.post(
@@ -249,7 +231,6 @@ const handleSaveInvoice = async () => {
     alert("Error saving invoice!");
   }
 };
-
 
 
 
