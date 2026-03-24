@@ -26,7 +26,7 @@ function PreviousInvoicePage() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this invoice?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/invoices/${id}`);
+        await axios.delete(`https://shri-g-enterprises-professional.onrender.com/api/invoices/${id}`);
         setInvoices(invoices.filter((inv) => inv._id !== id));
         alert("Invoice deleted successfully");
       } catch (err) {
