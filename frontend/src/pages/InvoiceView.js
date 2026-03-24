@@ -14,7 +14,7 @@ export default function InvoiceView() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/invoices/${id}`);
+        const res = await axios.get(`https://shri-g-enterprises-professional.onrender.com/api/invoices/${id}`);
         setInv(res.data);
       } catch (err) { console.error(err); }
     };

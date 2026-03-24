@@ -10,7 +10,7 @@ function PreviousInvoicePage() {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/invoices"); 
+        const res = await axios.get("https://shri-g-enterprises-professional.onrender.com/api/invoices"); 
         setInvoices(res.data);
       } catch (err) {
         console.error("Error fetching invoices:", err);
