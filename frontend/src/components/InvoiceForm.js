@@ -274,14 +274,17 @@ function InvoiceForm() {
         <table className="prof-table" style={{ width: "100%", borderCollapse: "collapse", marginBottom: "2px" }}>
           <thead>
             <tr>
-              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "40px" }}>SR. NO.</th>
+              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "30px" }}>SR. NO.</th>
               <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "left", width: "auto" }}>ITEM DESCRIPTION</th>
-              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "55px" }}>HSN</th>
-              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "45px" }}>QTY</th>
-              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "left", width: "60px" }}>RATE/ITEM</th>
-              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "55px" }}>GST %</th>
-              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "right", width: "85px" }}>AMOUNT</th>
-              <th className="no-print" style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "40px" }}>ACTION</th>
+              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "50px" }}>HSN</th>
+              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "35px" }}>QTY</th>
+              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "left", width: "50px" }}>RATE/ITEM</th>
+              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "right", width: "60px" }}>TAXABLE</th>
+              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "40px" }}>GST %</th>
+              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "right", width: "50px" }}>CGST</th>
+              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "right", width: "50px" }}>SGST</th>
+              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "right", width: "70px" }}>TOTAL</th>
+              <th className="no-print" style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "30px" }}>ACTION</th>
             </tr>
           </thead>
           <tbody>
@@ -300,16 +303,25 @@ function InvoiceForm() {
                 <td style={{ border: "1px solid #eee", padding: "4px" }}>
                   <input type="number" name="rate" value={item.rate} onChange={(e) => handleItemChange(index, e)} style={{ width: "100%", border: "none", fontSize: "12px", outline: "none" }} />
                 </td>
+                <td style={{ border: "1px solid #eee", padding: "4px", textAlign: "right", fontSize: "11px" }}>
+                   {Number(item.amount).toFixed(2)}
+                </td>
                 <td style={{ border: "1px solid #eee", padding: "4px" }}>
-                  <select name="gstRate" value={item.gstRate || 18} onChange={(e) => handleItemChange(index, e)} style={{ border: "1px solid #ddd", fontSize: "11px", outline: "none", padding: "2px" }}>
+                  <select name="gstRate" value={item.gstRate || 18} onChange={(e) => handleItemChange(index, e)} style={{ border: "1px solid #ddd", fontSize: "11px", outline: "none", padding: "2px", width: "100%" }}>
                     <option value={5}>5%</option>
                     <option value={12}>12%</option>
                     <option value={18}>18%</option>
                     <option value={28}>28%</option>
                   </select>
                 </td>
+                <td style={{ border: "1px solid #eee", padding: "4px", textAlign: "right", fontSize: "10px" }}>
+                  {((item.amount * (item.gstRate / 2)) / 100).toFixed(2)}
+                </td>
+                <td style={{ border: "1px solid #eee", padding: "4px", textAlign: "right", fontSize: "10px" }}>
+                  {((item.amount * (item.gstRate / 2)) / 100).toFixed(2)}
+                </td>
                 <td style={{ border: "1px solid #eee", padding: "4px", textAlign: "right", fontSize: "12px", fontWeight: "bold" }}>
-                  {Number(item.amount).toFixed(2)}
+                  {(item.amount * (1 + (item.gstRate / 100))).toFixed(2)}
                 </td>
                 <td className="no-print" style={{ border: "1px solid #eee", padding: "4px", textAlign: "center" }}>
                    <button onClick={() => removeItem(index)} style={{ background: "#fff", border: "1px solid #ddd", color: "#e74c3c", padding: "2px 6px", borderRadius: "50%", cursor: "pointer" }}>×</button>
@@ -338,8 +350,12 @@ function InvoiceForm() {
                <span style={{ fontWeight: "bold" }}>₹{total.toFixed(2)}</span>
              </div>
              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginBottom: "2px" }}>
-               <span>Total GST</span>
-               <span style={{ fontWeight: "bold" }}>₹{(cgst + sgst).toFixed(2)}</span>
+               <span>CGST</span>
+               <span style={{ fontWeight: "bold" }}>₹{cgst.toFixed(2)}</span>
+             </div>
+             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginBottom: "2px" }}>
+               <span>SGST</span>
+               <span style={{ fontWeight: "bold" }}>₹{sgst.toFixed(2)}</span>
              </div>
              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", fontWeight: "800", borderTop: "2px solid #000", marginTop: "4px", paddingTop: "4px" }}>
                <span>Total</span>

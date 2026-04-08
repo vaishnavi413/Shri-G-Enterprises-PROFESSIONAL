@@ -114,15 +114,16 @@ export default function InvoiceView() {
         <table className="prof-table">
           <thead>
             <tr>
-              <th style={{width: "50px"}}>SR. NO.</th>
+              <th style={{width: "40px"}}>SR. NO.</th>
               <th style={{width: "250px"}}>Item Description</th>
               <th>HSN</th>
               <th>Qty</th>
               <th>Rate/Item</th>
-              <th>GST %</th>
               <th>Taxable Value</th>
-              <th>Tax Amount</th>
-              <th>Amount</th>
+              <th>GST %</th>
+              <th>CGST</th>
+              <th>SGST</th>
+              <th>Total Amt</th>
             </tr>
           </thead>
           <tbody>
@@ -135,9 +136,10 @@ export default function InvoiceView() {
                 <td>{it.hsn}</td>
                 <td>{it.qty}</td>
                 <td>{Number(it.rate).toFixed(2)}</td>
-                <td>{it.gstRate || 18}%</td>
                 <td>{(it.qty * it.rate).toFixed(2)}</td>
-                <td>{((it.qty * it.rate * (it.gstRate || 18)) / 100).toFixed(2)}</td>
+                <td>{it.gstRate || 18}%</td>
+                <td>{((it.qty * it.rate * (it.gstRate || 18)) / 200).toFixed(2)}</td>
+                <td>{((it.qty * it.rate * (it.gstRate || 18)) / 200).toFixed(2)}</td>
                 <td style={{fontWeight: 700}}>{((it.qty * it.rate) * (1 + (it.gstRate || 18)/100)).toFixed(2)}</td>
               </tr>
             ))}
@@ -155,8 +157,12 @@ export default function InvoiceView() {
                <span style={{fontWeight: 700}}>₹{Number(inv.total).toFixed(2)}</span>
              </div>
              <div className="row-item">
-               <span>Total GST</span>
-               <span style={{fontWeight: 700}}>₹{(Number(inv.cgst) + Number(inv.sgst)).toFixed(2)}</span>
+               <span>CGST</span>
+               <span style={{fontWeight: 700}}>₹{Number(inv.cgst).toFixed(2)}</span>
+             </div>
+             <div className="row-item">
+               <span>SGST</span>
+               <span style={{fontWeight: 700}}>₹{Number(inv.sgst).toFixed(2)}</span>
              </div>
              <div className="row-item grand">
                <span>Total</span>
