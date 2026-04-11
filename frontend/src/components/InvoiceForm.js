@@ -277,7 +277,7 @@ function InvoiceForm() {
               <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "30px" }}>SR. NO.</th>
               <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "left", width: "auto" }}>ITEM DESCRIPTION</th>
               <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "50px" }}>HSN</th>
-              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "35px" }}>QTY</th>
+              <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "60px" }}>QTY</th>
               <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "left", width: "50px" }}>RATE/ITEM</th>
               <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "right", width: "60px" }}>TAXABLE</th>
               <th style={{ background: "#f8f9fa", border: "1px solid #eee", padding: "4px", fontSize: "10px", textAlign: "center", width: "40px" }}>GST %</th>
@@ -298,7 +298,13 @@ function InvoiceForm() {
                   <input type="text" name="hsn" placeholder="HSN" value={item.hsn} onChange={(e) => handleItemChange(index, e)} style={{ width: "100%", border: "none", fontSize: "12px", textAlign: "center", outline: "none" }} />
                 </td>
                 <td style={{ border: "1px solid #eee", padding: "4px" }}>
-                  <input type="number" name="qty" value={item.qty} onChange={(e) => handleItemChange(index, e)} style={{ width: "100%", border: "none", fontSize: "12px", textAlign: "center", outline: "none" }} />
+                  <input type="text" name="qty" placeholder="00000" value={item.qty} onChange={(e) => handleItemChange(index, e)} onBlur={(e) => {
+                    const newItems = [...invoice.items];
+                    if (newItems[index].qty) {
+                      newItems[index].qty = String(newItems[index].qty).padStart(5, '0');
+                      setInvoice({ ...invoice, items: newItems });
+                    }
+                  }} style={{ width: "100%", border: "none", fontSize: "12px", textAlign: "center", outline: "none" }} />
                 </td>
                 <td style={{ border: "1px solid #eee", padding: "4px" }}>
                   <input type="number" name="rate" value={item.rate} onChange={(e) => handleItemChange(index, e)} style={{ width: "100%", border: "none", fontSize: "12px", outline: "none" }} />

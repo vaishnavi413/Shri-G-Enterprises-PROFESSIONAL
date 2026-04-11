@@ -117,7 +117,7 @@ export default function InvoiceView() {
               <th style={{width: "40px"}}>SR. NO.</th>
               <th style={{width: "250px"}}>Item Description</th>
               <th>HSN</th>
-              <th>Qty</th>
+              <th style={{width: "60px"}}>Qty</th>
               <th>Rate/Item</th>
               <th>Taxable Value</th>
               <th>GST %</th>
@@ -134,7 +134,7 @@ export default function InvoiceView() {
                   <div style={{fontWeight: 700}}>{it.description}</div>
                 </td>
                 <td>{it.hsn}</td>
-                <td>{it.qty}</td>
+                <td>{String(it.qty).padStart(5, "0")}</td>
                 <td>{Number(it.rate).toFixed(2)}</td>
                 <td>{(it.qty * it.rate).toFixed(2)}</td>
                 <td>{it.gstRate || 18}%</td>
