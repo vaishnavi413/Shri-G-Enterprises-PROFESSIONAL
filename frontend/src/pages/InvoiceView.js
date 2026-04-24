@@ -116,7 +116,7 @@ export default function InvoiceView() {
             <tr>
               <th style={{width: "40px"}}>SR. NO.</th>
               <th style={{width: "250px"}}>Item Description</th>
-              <th>HSN</th>
+              <th style={{width: "100px"}}>HSN</th>
               <th style={{width: "60px"}}>Qty</th>
               <th>Rate/Item</th>
               <th>Taxable Value</th>

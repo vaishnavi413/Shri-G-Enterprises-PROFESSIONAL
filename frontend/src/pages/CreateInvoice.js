@@ -87,7 +87,7 @@ const CreateInvoice = () => {
           <tr>
             <th>SR. NO.</th>
             <th>DESCRIPTION</th>
-            <th>HSN / SAC</th>
+            <th style={{width: "100px"}}>HSN / SAC</th>
             <th>QTY.</th>
             <th>RATE</th>
             <th>AMOUNT</th>
@@ -98,7 +98,7 @@ const CreateInvoice = () => {
             <tr key={i}>
               <td style={{ textAlign: "center" }}>{p.srNo}</td>
               <td><input value={p.description} onChange={(e) => handleProductChange(i, "description", e.target.value)} /></td>
-              <td><input value={p.hsn} onChange={(e) => handleProductChange(i, "hsn", e.target.value)} /></td>
+              <td><input style={{width: "100%"}} maxLength="15" value={p.hsn} onChange={(e) => handleProductChange(i, "hsn", e.target.value)} /></td>
               <td><input type="number" value={p.qty} onChange={(e) => handleProductChange(i, "qty", e.target.value)} /></td>
               <td><input type="number" value={p.rate} onChange={(e) => handleProductChange(i, "rate", e.target.value)} /></td>
               <td className="amount">{p.amount.toFixed(2)}</td>
