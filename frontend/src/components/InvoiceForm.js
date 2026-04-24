@@ -298,13 +298,7 @@ function InvoiceForm() {
                   <input type="text" name="hsn" placeholder="HSN" maxLength="15" value={item.hsn} onChange={(e) => handleItemChange(index, e)} style={{ width: "100%", border: "none", fontSize: "12px", textAlign: "center", outline: "none" }} />
                 </td>
                 <td style={{ border: "1px solid #eee", padding: "4px" }}>
-                  <input type="text" name="qty" placeholder="00000" value={item.qty} onChange={(e) => handleItemChange(index, e)} onBlur={(e) => {
-                    const newItems = [...invoice.items];
-                    if (newItems[index].qty) {
-                      newItems[index].qty = String(newItems[index].qty).padStart(5, '0');
-                      setInvoice({ ...invoice, items: newItems });
-                    }
-                  }} style={{ width: "100%", border: "none", fontSize: "12px", textAlign: "center", outline: "none" }} />
+                  <input type="text" name="qty" placeholder="0" value={item.qty} onChange={(e) => handleItemChange(index, e)} style={{ width: "100%", border: "none", fontSize: "12px", textAlign: "center", outline: "none" }} />
                 </td>
                 <td style={{ border: "1px solid #eee", padding: "4px" }}>
                   <input type="number" name="rate" value={item.rate} onChange={(e) => handleItemChange(index, e)} style={{ width: "100%", border: "none", fontSize: "12px", outline: "none" }} />
