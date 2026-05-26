@@ -75,7 +75,7 @@ export default function InvoiceView() {
           <div className="company-brand">
             <h1>SHRI G ENTERPRISES</h1>
             <div className="details">
-              <b>GSTIN: 27AJIPG2516N1ZZ</b><br />
+              <b>GSTIN: 27AJIPG2516N1Z2</b><br />
               S.No.371, Flat No.20, Unity Park, Somwar Peth, Narpagtiri Chowk, Pune - 411011.<br />
               <b>Mobile:</b> 9850111166 | <b>Email:</b> shrignterprises25@gmail.com
             </div>

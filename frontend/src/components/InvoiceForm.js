@@ -225,7 +225,7 @@ function InvoiceForm() {
           <div className="company-brand">
             <h1 style={{ margin: "2px 0", fontSize: "22px" }}>SHRI G ENTERPRISES</h1>
             <div className="details" style={{ fontSize: "10px", color: "#666", lineHeight: "1.2" }}>
-              <b>GSTIN: 27AJIPG2516N1ZZ</b><br />
+              <b>GSTIN: 27AJIPG2516N1Z2</b><br />
               S.No.371, Flat No.20, Unity Park, Somwar Peth, Narpagtiri Chowk, Pune - 411011.<br />
               <b>Mobile:</b> 9850111166 | <b>Email:</b> shrignterprises25@gmail.com
             </div>

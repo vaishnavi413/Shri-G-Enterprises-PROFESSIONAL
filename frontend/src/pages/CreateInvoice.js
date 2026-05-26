@@ -53,7 +53,7 @@ const CreateInvoice = () => {
           Above HDFC Bank, Pune 411011. | Ph: +91 9850111166 |
           Email: <u>shrignterprises25@gmail.com</u>
         </div>
-        <div className="gst">GST No.: 27AJIPG2516N1ZZ</div>
+        <div className="gst">GST No.: 27AJIPG2516N1Z2</div>
       </div>
 
       <table className="info-table" style={{ marginTop: "12px" }}>

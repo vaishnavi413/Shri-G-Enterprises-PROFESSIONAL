@@ -12,7 +12,7 @@ const HomePage = () => {
         S. No.371, Flat No.20, Unity Park, Somwar Peth, Narpatsingh Chowk,<br />
         Above HDFC Bank, Pune 411011<br />
         Email : shrigenterprises25@gmail.com<br />
-        <b>GST No : 27AJIPG2516N1ZZ</b>
+        <b>GST No : 27AJIPG2516N1Z2</b>
       </p>
       <button onClick={() => navigate("/invoice")}>Create New Invoice</button>
       <button onClick={() => navigate("/view-bills")}>View Previous Bills</button>
